@@ -4,6 +4,7 @@ import { Response } from "express";
 
 import { UpdateCompanyDto, UploadLogoDto } from "./company.dtos";
 import { IsCompanyOwner, IsVerified } from "./company.guard";
+import { ImageOptimisationPipe } from "./company.pipe";
 import { CompanyService } from "./company.service";
 import { JwtGuard } from "src/auth/auth.guard";
 
@@ -30,7 +31,7 @@ export class CompanyController {
     @UseGuards(JwtGuard, IsCompanyOwner, IsVerified)
     @Patch(":id/upload-logo")
     @FormDataRequest()
-    uploadLogo(@Body() body: UploadLogoDto, @Param("id") id: string) {
+    uploadLogo(@Body(new ImageOptimisationPipe()) body: UploadLogoDto, @Param("id") id: string) {
         return this.companyService.uploadLogo(body, id);
     }
 

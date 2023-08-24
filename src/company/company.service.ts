@@ -33,10 +33,9 @@ export class CompanyService {
 
     async uploadLogo(body: UploadLogoDto, id: string) {
         const { logo } = body;
-        const extension = logo.originalName.split(".").slice(-1)[0];
-        const pathname = `./uploads/${id}.${extension}`;
+        const pathname = `./uploads/${id}.webp`;
+        console.log(pathname, id);
         fs.mkdir(`./uploads`, { recursive: true }).then(async () => await fs.writeFile(pathname, logo.buffer, "utf-8"));
-        await this.prisma.company.update({ where: { id }, data: { logo: pathname } })
         return { status: "success" };
     }
 
