@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id @default(cuid())
+  username      String
+  password      String
+  email         String       @unique
+  github        String?
+  linkedin      String?
+  website       String?
+  resume        String?
+  experiences   Experience[]
+  skills        Skill[]
+  education     Education[]
+  appliedToJobs Job[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Experience {
+  id          String  @id @default(cuid())
+  title       String
+  startDate   String
+  endDate     String
+  description String
+  userId      String?
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          String  @id @default(cuid())
+  university  String
+  degree      String
+  startDate   String
+  endDate     String
+  description String
+  userId      String?
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Skill {
+  id                String  @id @default(cuid())
+  skill             String  
+  yearsOfExperience Int
+  user              User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String?
+}
+
+model Company {
+  id          String  @id @default(cuid())
+  company     String  @unique
+  email       String  @unique
+  password    String
+  description String?
+  industry    String?
+  location    String?
+  website     String?
+  logo        String?
+  token       Int?
+  isVerified  Boolean @default(false)
+  jobs        Job[]
+}
+
+model Job {
+  id                 String          @id @default(cuid())
+  title              String
+  description        String
+  postedAt           DateTime        @default(now())
+  location           Location
+  experienceLevel    ExperienceLevel
+  monthlySalary      Int
+  currency           String
+  requirements       Requirement[]
+  activelyRecruiting Boolean         @default(true)
+  companyId          String
+  company            Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applicants         User[]
+}
+
+model Requirement {
+  id                 String  @id @default(cuid())
+  skill              String 
+  requiredExperience Int
+  description        String
+  job                Job?    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId              String?
+}
+
+enum Location {
+  onsite
+  hybrid
+  remote
+}
+
+enum ExperienceLevel {
+  intership
+  entrylevel
+  intermediate
+  senior
+  executive
+}
